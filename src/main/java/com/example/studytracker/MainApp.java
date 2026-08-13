@@ -1,5 +1,7 @@
 package com.example.studytracker;
 
+import com.example.studytracker.db.DatabaseManager;
+
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -10,6 +12,10 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        DatabaseManager databaseManager = new DatabaseManager();
+        databaseManager.initializeTables();
+        
+
         Label label = new Label("Study-Tracker");
 
         StackPane root = new StackPane(label);
