@@ -1,6 +1,8 @@
 package com.example.studytracker;
 
+import com.example.studytracker.dao.SubjectDao;
 import com.example.studytracker.db.DatabaseManager;
+import com.example.studytracker.model.Subject;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -12,16 +14,19 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        DatabaseManager databaseManager = new DatabaseManager();
-        databaseManager.initializeTables();
-        
+        DatabaseManager dbManager = new DatabaseManager();
+        dbManager.initializeTables();
 
-        Label label = new Label("Study-Tracker");
+        SubjectDao subjectDao = new SubjectDao(dbManager);
+        subjectDao.addSubject(new Subject(0, "Data Structures", "Prof. Sharma"));
+        System.out.println(subjectDao.getAllSubjects());
+
+        Label label = new Label("MCA Study Tracker");
 
         StackPane root = new StackPane(label);
         Scene scene = new Scene(root, 600, 400);
 
-        primaryStage.setTitle("Study-Tracker");
+        primaryStage.setTitle("MCA Study Tracker");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
