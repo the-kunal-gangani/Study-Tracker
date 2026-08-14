@@ -6,8 +6,8 @@ import com.example.studytracker.model.Subject;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
+import javafx.scene.control.ListView;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
@@ -18,12 +18,11 @@ public class MainApp extends Application {
         dbManager.initializeTables();
 
         SubjectDao subjectDao = new SubjectDao(dbManager);
-        subjectDao.addSubject(new Subject(0, "Data Structures", "Prof. Sharma"));
-        System.out.println(subjectDao.getAllSubjects());
-
-        Label label = new Label("MCA Study Tracker");
-
-        StackPane root = new StackPane(label);
+        ListView<String> listView = new ListView<>();
+        for (Subject s : subjectDao.getAllSubjects()) {
+            listView.getItems().add(s.getName());
+        }
+        VBox root = new VBox(listView);
         Scene scene = new Scene(root, 600, 400);
 
         primaryStage.setTitle("MCA Study Tracker");
