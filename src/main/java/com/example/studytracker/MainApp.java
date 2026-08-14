@@ -6,6 +6,7 @@ import com.example.studytracker.model.Subject;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -33,16 +34,22 @@ public class MainApp extends Application {
         addButton.setOnAction(event -> {
             String name = nameField.getText();
             if (name.isBlank()) {
+                new Alert(Alert.AlertType.WARNING, "Blank Values Found!!!").showAndWait();
                 return;
             }
             Subject subject = new Subject(0, name, "");
-            subjectDao.addSubject(subject);
+            try {
+                subjectDao.addSubject(subject);
+                new Alert(Alert.AlertType.INFORMATION, "Data Submitted Successfully!!!").showAndWait();
 
-            listView.getItems().clear();
-            for (Subject s : subjectDao.getAllSubjects()) {
-                listView.getItems().add(s.getName());
+                listView.getItems().clear();
+                for (Subject s : subjectDao.getAllSubjects()) {
+                    listView.getItems().add(s.getName());
+                }
+                nameField.clear();
+            } catch (RuntimeException e) {
+                new Alert(Alert.AlertType.ERROR, "Failed to Add Subject : " + e.getMessage()).showAndWait();
             }
-            nameField.clear();
         });
 
         VBox root = new VBox(nameField, addButton, listView);
