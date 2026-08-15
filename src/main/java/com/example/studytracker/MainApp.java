@@ -10,6 +10,7 @@ import com.example.studytracker.model.AssignmentStatus;
 import com.example.studytracker.model.Priority;
 import com.example.studytracker.model.Subject;
 
+import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -23,16 +24,39 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class MainApp extends Application {
+    private DatabaseManager dbManager;
 
     @Override
     public void start(Stage primaryStage) {
         DatabaseManager dbManager = new DatabaseManager();
         dbManager.initializeTables();
 
+        Label splashLabel = new Label("MCA Study Tracker");
+        splashLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;");
+
+        StackPane splashRoot = new StackPane(splashLabel);
+        splashRoot.setStyle("-fx-background-color: #1e1e2f;");
+
+        Scene splashScene = new Scene(splashRoot, 400, 250);
+        primaryStage.setScene(splashScene);
+        primaryStage.setTitle("Loading...");
+        primaryStage.show();
+
+        PauseTransition delay = new PauseTransition(Duration.seconds(2));
+        delay.setOnFinished(event -> showMainApp(primaryStage));
+        delay.play();
+
+    }
+
+    private void showMainApp(Stage primaryStage) {
+        dbManager = new DatabaseManager();
+        dbManager.initializeTables();
         SubjectDao subjectDao = new SubjectDao(dbManager);
         AssignmentDao assignmentDao = new AssignmentDao(dbManager);
 
@@ -138,7 +162,7 @@ public class MainApp extends Application {
         Label priorityLabel = new Label("Priority");
         Label statusLabel = new Label("Status");
         Label assignmentListLabel = new Label("Your Assignments");
-        assignmentlistLabel.getStyleClass().add("section-heading");
+        assignmentListLabel.getStyleClass().add("section-heading");
         VBox assignmentFormBox = new VBox(6, titleLabel, titleField, subjectLabel, subjectComboBox, dueDateLabel,
                 dueDatePicker, priorityLabel, priorityComboBox, statusLabel, statusComboBox, addAssignmentButton);
 
