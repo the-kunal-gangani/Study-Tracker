@@ -1,0 +1,71 @@
+.root {
+    -fx-background-color: #1e1e2f;
+    -fx-font-family: "Segoe UI";
+}
+
+.label {
+    -fx-text-fill: #e0e0e0;
+    -fx-font-size: 13px;
+}
+
+.text-field,
+.combo-box,
+.date-picker {
+    -fx-background-color: #2a2a3d;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #888;
+    -fx-background-radius: 6;
+    -fx-border-color: #3d3d55;
+    -fx-border-radius: 6;
+    -fx-padding: 6;
+}
+
+.button {
+    -fx-background-color: #5865f2;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #4752c4;
+}
+
+.list-view {
+    -fx-background-color: #2a2a3d;
+    -fx-background-radius: 6;
+}
+
+.list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #e0e0e0;
+    -fx-padding: 6 10;
+}
+
+.list-cell:filled:hover {
+    -fx-background-color: #3d3d55;
+}
+
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: #1e1e2f;
+}
+
+.tab {
+    -fx-background-color: #2a2a3d;
+}
+
+.tab:selected {
+    -fx-background-color: #5865f2;
+}
+
+.tab .tab-label {
+    -fx-text-fill: #e0e0e0;
+}
+
+.section-heading {
+    -fx-font-weight: bold;
+    -fx-font-size: 15px;
+    -fx-text-fill: #ffffff;
+}

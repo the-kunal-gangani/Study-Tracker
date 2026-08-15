@@ -1,0 +1,7 @@
+com\example\studytracker\dao\AssignmentDao.class
+com\example\studytracker\dao\SubjectDao.class
+com\example\studytracker\model\AssignmentStatus.class
+com\example\studytracker\model\Priority.class
+com\example\studytracker\model\Subject.class
+com\example\studytracker\db\DatabaseManager.class
+com\example\studytracker\model\Assignment.class

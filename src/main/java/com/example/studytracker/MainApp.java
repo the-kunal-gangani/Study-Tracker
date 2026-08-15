@@ -77,7 +77,7 @@ public class MainApp extends Application {
         formBox.setPadding(new Insets(15));
 
         Label listLabel = new Label("Your Subjects");
-        listLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+        listLabel.getStyleClass().add("section-heading");
 
         TextField titleField = new TextField();
         titleField.setPromptText("Assignment Title");
@@ -95,6 +95,7 @@ public class MainApp extends Application {
         ComboBox<AssignmentStatus> statusComboBox = new ComboBox<>();
         statusComboBox.getItems().addAll(AssignmentStatus.values());
 
+        ListView<String> assignmentListView = new ListView<>();
         Button addAssignmentButton = new Button("Add Assignment");
         addAssignmentButton.setOnAction(event -> {
             String title = titleField.getText();
@@ -131,15 +132,13 @@ public class MainApp extends Application {
                 new Alert(Alert.AlertType.ERROR, "Failed to Add Assignment: " + e.getMessage()).showAndWait();
             }
         });
-
-        ListView<String> assignmentListView = new ListView<>();
         Label titleLabel = new Label("Assignment Title");
         Label subjectLabel = new Label("Subject");
         Label dueDateLabel = new Label("Due Date");
         Label priorityLabel = new Label("Priority");
         Label statusLabel = new Label("Status");
         Label assignmentListLabel = new Label("Your Assignments");
-        assignmentListLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 14px;");
+        assignmentlistLabel.getStyleClass().add("section-heading");
         VBox assignmentFormBox = new VBox(6, titleLabel, titleField, subjectLabel, subjectComboBox, dueDateLabel,
                 dueDatePicker, priorityLabel, priorityComboBox, statusLabel, statusComboBox, addAssignmentButton);
 
@@ -163,6 +162,7 @@ public class MainApp extends Application {
         TabPane tabPane = new TabPane(subjectsTab, assignmentsTab);
 
         Scene scene = new Scene(tabPane, 600, 450);
+        scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
 
         primaryStage.setTitle("MCA Study Tracker");
         primaryStage.setScene(scene);
