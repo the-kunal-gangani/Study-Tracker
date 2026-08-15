@@ -107,16 +107,25 @@ public class MainApp extends Application {
 
         VBox subjectsContent = new VBox(10, formBox, listLabel, listView);
         subjectsContent.setPadding(new Insets(15));
-        VBox assignmentsContent = new VBox(11, assignmentFormBox, assignmentListLabel, listView);
+        VBox assignmentsContent = new VBox(10, assignmentFormBox, assignmentListLabel, assignmentListView);
         assignmentsContent.setPadding(new Insets(15));
 
-        VBox root = new VBox(10, formBox, listLabel, listView, assignmentFormBox, assignmentListLabel,
-                assignmentListView);
-        root.setPadding(new Insets(15));
-        ScrollPane scrollPane = new ScrollPane(root);
+        ScrollPane subjectsScroll = new ScrollPane(subjectsContent);
+        subjectsScroll.setFitToWidth(true);
+        ScrollPane assignmentsPane = new ScrollPane(assignmentsContent);
+        assignmentsPane.setFitToWidth(true);
+
+        Tab subjectsTab = new Tab("Subjects", subjectsScroll);
+        subjectsTab.setClosable(false);
+        Tab assignmentsTab = new Tab("Assignments", assignmentsPane);
+        assignmentsTab.setClosable(false);
+
+        TabPane tabPane = new TabPane(subjectsTab, assignmentsTab);
+
+        ScrollPane scrollPane = new ScrollPane(tabPane);
         scrollPane.setFitToWidth(true);
 
-        Scene scene = new Scene(scrollPane, 600, 450);
+        Scene scene = new Scene(tabPane, 600, 450);
 
         primaryStage.setTitle("MCA Study Tracker");
         primaryStage.setScene(scene);
