@@ -1,7 +1,11 @@
 package com.example.studytracker;
 
+import java.time.LocalDate;
+
+import com.example.studytracker.dao.AssignmentDao;
 import com.example.studytracker.dao.SubjectDao;
 import com.example.studytracker.db.DatabaseManager;
+import com.example.studytracker.model.Assignment;
 import com.example.studytracker.model.AssignmentStatus;
 import com.example.studytracker.model.Priority;
 import com.example.studytracker.model.Subject;
@@ -15,12 +19,12 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.Tab;
 
 public class MainApp extends Application {
 
@@ -30,6 +34,7 @@ public class MainApp extends Application {
         dbManager.initializeTables();
 
         SubjectDao subjectDao = new SubjectDao(dbManager);
+        AssignmentDao assignmentDao = new AssignmentDao(dbManager);
 
         ListView<String> listView = new ListView<>();
         for (Subject s : subjectDao.getAllSubjects()) {
@@ -91,6 +96,41 @@ public class MainApp extends Application {
         statusComboBox.getItems().addAll(AssignmentStatus.values());
 
         Button addAssignmentButton = new Button("Add Assignment");
+        addAssignmentButton.setOnAction(event -> {
+            String title = titleField.getText();
+            String selectedSubjectName = subjectComboBox.getValue();
+            LocalDate dueDate = dueDatePicker.getValue();
+            Priority priority = priorityComboBox.getValue();
+            AssignmentStatus status = statusComboBox.getValue();
+
+            if (title.isBlank() || selectedSubjectName == null || dueDate == null || priority == null
+                    || status == null) {
+                new Alert(Alert.AlertType.WARNING, "Blank Values Found").showAndWait();
+                return;
+            }
+
+            int subjectId = -1;
+            for (Subject s : subjectDao.getAllSubjects()) {
+                if (s.getName().equals(selectedSubjectName)) {
+                    subjectId = s.getId();
+                }
+            }
+
+            Assignment assignment = new Assignment(0, title, dueDate, priority, status, subjectId);
+
+            try {
+                assignmentDao.addAssignment(assignment);
+                new Alert(Alert.AlertType.INFORMATION, "Assignment Submitted Successfully").showAndWait();
+
+                assignmentListView.getItems().clear();
+                for (Assignment a : assignmentDao.getAllAssignments()) {
+                    assignmentListView.getItems().add(a.getTitle());
+                }
+                titleField.clear();
+            } catch (RuntimeException e) {
+                new Alert(Alert.AlertType.ERROR, "Failed to Add Assignment: " + e.getMessage()).showAndWait();
+            }
+        });
 
         ListView<String> assignmentListView = new ListView<>();
         Label titleLabel = new Label("Assignment Title");
@@ -121,9 +161,6 @@ public class MainApp extends Application {
         assignmentsTab.setClosable(false);
 
         TabPane tabPane = new TabPane(subjectsTab, assignmentsTab);
-
-        ScrollPane scrollPane = new ScrollPane(tabPane);
-        scrollPane.setFitToWidth(true);
 
         Scene scene = new Scene(tabPane, 600, 450);
 
