@@ -18,6 +18,9 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.Tab;
 
 public class MainApp extends Application {
 
@@ -102,11 +105,18 @@ public class MainApp extends Application {
 
         assignmentFormBox.setPadding(new Insets(15));
 
+        VBox subjectsContent = new VBox(10, formBox, listLabel, listView);
+        subjectsContent.setPadding(new Insets(15));
+        VBox assignmentsContent = new VBox(11, assignmentFormBox, assignmentListLabel, listView);
+        assignmentsContent.setPadding(new Insets(15));
+
         VBox root = new VBox(10, formBox, listLabel, listView, assignmentFormBox, assignmentListLabel,
                 assignmentListView);
         root.setPadding(new Insets(15));
+        ScrollPane scrollPane = new ScrollPane(root);
+        scrollPane.setFitToWidth(true);
 
-        Scene scene = new Scene(root, 600, 450);
+        Scene scene = new Scene(scrollPane, 600, 450);
 
         primaryStage.setTitle("MCA Study Tracker");
         primaryStage.setScene(scene);
