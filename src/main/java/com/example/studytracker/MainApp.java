@@ -3,6 +3,7 @@ package com.example.studytracker;
 import java.time.LocalDate;
 
 import com.example.studytracker.dao.AssignmentDao;
+import com.example.studytracker.dao.NoteDao;
 import com.example.studytracker.dao.StudentDao;
 import com.example.studytracker.dao.SubjectDao;
 import com.example.studytracker.db.DatabaseManager;
@@ -11,6 +12,7 @@ import com.example.studytracker.model.AssignmentStatus;
 import com.example.studytracker.model.Priority;
 import com.example.studytracker.model.Student;
 import com.example.studytracker.model.Subject;
+import com.example.studytracker.model.Note;
 
 import javafx.animation.PauseTransition;
 import javafx.application.Application;
@@ -90,24 +92,64 @@ public class MainApp extends Application {
                 student = studentDao.findByNameClassDivision(name, className, division).get();
             }
 
-            VBox loginBox = new VBox(10, nameLabel, nameField, classLabel, classField,
-                    divisionLabel, divisionField, continueButton);
-            loginBox.setPadding(new Insets(20));
-
-            Scene scene = new Scene(loginBox, 400, 300);
-            scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
-
-            primaryStage.setTitle("Login");
-            primaryStage.setScene(scene);
-            primaryStage.show();
-
+            loggedInStudent = student;
+            showMainApp(primaryStage);
         });
+
+        VBox loginBox = new VBox(10, nameLabel, nameField, classLabel, classField,
+                divisionLabel, divisionField, continueButton);
+        loginBox.setPadding(new Insets(20));
+
+        Scene scene = new Scene(loginBox, 400, 300);
+        scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
+
+        primaryStage.setTitle("Login");
+        primaryStage.setScene(scene);
+        primaryStage.show();
     }
 
     private void showMainApp(Stage primaryStage) {
         SubjectDao subjectDao = new SubjectDao(dbManager);
         AssignmentDao assignmentDao = new AssignmentDao(dbManager);
+        NoteDao noteDao = new NoteDao(dbManager);
 
+        ListView<String> notesView = new ListView<>();
+        for (Note n : noteDao.getNotesForStudents(loggedInStudent.getClassName(), loggedInStudent.getDivision())) {
+            notesView.getItems().add(n.getTitle());
+        }
+        Label noteTitleLabel = new Label("Note Title");
+        TextField noteTitleField = new TextField();
+
+        Label noteContentLabel = new Label("Content");
+        TextField noteContentField = new TextField();
+
+        Label noteSubjectLabel = new Label("Subject");
+        ComboBox<String> noteSubjectComboBox = new ComboBox<>();
+        // populate this the same way you did subjectComboBox earlier —
+        // loop through subjectDao.getAllSubjects(), add each .getName()
+        for (Note n : noteDao.getAllNotes()) {
+            noteSubjectComboBox.getItems().add(n.getTitle());
+        }
+
+        Button addNoteButton = new Button("Add Note");
+        addNoteButton.setOnAction(event -> {
+            // 1. read noteTitleField/noteContentField text, and the selected subject name
+            // 2. validate: title blank? subject not selected (null)? — content can stay
+            // optional
+            // 3. do the SAME subject-name-to-ID lookup loop you wrote for assignments
+            // (loop through subjectDao.getAllSubjects(), match .getName(), grab .getId())
+            // 4. build a new Note — but notice: className and division come from
+            // loggedInStudent, NOT from any text field:
+            // new Note(0, title, content, loggedInStudent.getClassName(),
+            // loggedInStudent.getDivision(), subjectId)
+            // 5. try/catch around noteDao.addNotes(note):
+            // - success: INFORMATION alert, clear+reload notesView using
+            // noteDao.getNotesForStudents(loggedInStudent.getClassName(),
+            // loggedInStudent.getDivision())
+            // (NOT getAllNotes — students should only ever see their own filtered view,
+            // even right after adding something)
+            // - failure: ERROR alert
+        });
         ListView<String> listView = new ListView<>();
         for (Subject s : subjectDao.getAllSubjects()) {
             listView.getItems().add(s.getName());
