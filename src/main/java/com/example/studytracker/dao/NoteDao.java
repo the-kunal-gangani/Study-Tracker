@@ -55,13 +55,26 @@ public class NoteDao {
     }
 
     public java.util.List<Note> getNotesForStudents(String className, String division) {
-        String sql = "INSERT INTO notes (title, content, class_name, division, subject_id) VALUES (?,?,?,?,?)";
+        String sql = "SELECT * from notes WHERE class_name = ? AND division = ?";
+        java.util.List<Note> notes = new ArrayList<>();
+
         try (Connection conn = dbManager.connect();
-                PreparedStatement stmt = conn.prepareStatement(sql);
-                ResultSet rs = stmt.executeQuery()) {
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, className);
+            stmt.setString(2, division);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    // read all six columns: id, title, content, class_name, division, subject_id
+                    // build a Note with them (same constructor order as getAllNotes)
+                    // add it to `notes`
+                }
+            }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Unable to fetch Notes..", e);
+            throw new RuntimeException("Unable to fetch notes for student", e);
         }
+
+        return notes;
     }
 }
