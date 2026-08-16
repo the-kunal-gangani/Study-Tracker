@@ -69,9 +69,7 @@ public class NoteDao {
                     int id = rs.getInt("id");
                     String title = rs.getString("title");
                     String content = rs.getString("content");
-                    String class_name = rs.getString("class_name");
-                    String dvsn = rs.getString("division");
-                    String subject_id = rs.getString("subject_id");
+                    int subject_id = rs.getInt("subject_id");
                     // build a Note with them (same constructor order as getAllNotes)
                     Note note = new Note(id, title, content, className, division, subject_id);
                     // add it to `notes`

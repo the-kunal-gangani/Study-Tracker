@@ -3,11 +3,13 @@ package com.example.studytracker;
 import java.time.LocalDate;
 
 import com.example.studytracker.dao.AssignmentDao;
+import com.example.studytracker.dao.StudentDao;
 import com.example.studytracker.dao.SubjectDao;
 import com.example.studytracker.db.DatabaseManager;
 import com.example.studytracker.model.Assignment;
 import com.example.studytracker.model.AssignmentStatus;
 import com.example.studytracker.model.Priority;
+import com.example.studytracker.model.Student;
 import com.example.studytracker.model.Subject;
 
 import javafx.animation.PauseTransition;
@@ -31,6 +33,7 @@ import javafx.util.Duration;
 
 public class MainApp extends Application {
     private DatabaseManager dbManager;
+    private Student loggedInStudent;
 
     @Override
     public void start(Stage primaryStage) {
@@ -48,9 +51,57 @@ public class MainApp extends Application {
         primaryStage.show();
 
         PauseTransition delay = new PauseTransition(Duration.seconds(2));
-        delay.setOnFinished(event -> showMainApp(primaryStage));
+        delay.setOnFinished(event -> showLogin(primaryStage));
         delay.play();
 
+    }
+
+    private void showLogin(Stage primaryStage) {
+        StudentDao studentDao = new StudentDao(dbManager);
+
+        Label nameLabel = new Label("Student's Name");
+        TextField nameField = new TextField();
+
+        Label classLabel = new Label("Student's Class");
+        TextField classField = new TextField();
+
+        Label divisionLabel = new Label("Student's Division");
+        TextField divisionField = new TextField();
+
+        Button continueButton = new Button("Continue");
+        continueButton.setOnAction(event -> {
+            String name = nameField.getText();
+            String className = classField.getText();
+            String division = divisionField.getText();
+
+            if (name.isBlank() || className.isBlank() || division.isBlank()) {
+                new Alert(Alert.AlertType.WARNING, "Blank Values Found").showAndWait();
+                return;
+            }
+
+            java.util.Optional<Student> existing = studentDao.findByNameClassDivision(name, className, division);
+
+            Student student;
+            if (existing.isPresent()) {
+                student = existing.get();
+            } else {
+                Student newStudent = new Student(0, name, className, division);
+                studentDao.addStudent(newStudent);
+                student = studentDao.findByNameClassDivision(name, className, division).get();
+            }
+
+            VBox loginBox = new VBox(10, nameLabel, nameField, classLabel, classField,
+                    divisionLabel, divisionField, continueButton);
+            loginBox.setPadding(new Insets(20));
+
+            Scene scene = new Scene(loginBox, 400, 300);
+            scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
+
+            primaryStage.setTitle("Login");
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+        });
     }
 
     private void showMainApp(Stage primaryStage) {
