@@ -3,6 +3,7 @@ com\example\studytracker\dao\SubjectDao.class
 com\example\studytracker\model\Student.class
 com\example\studytracker\MainApp.class
 com\example\studytracker\model\AssignmentStatus.class
+com\example\studytracker\model\Note.class
 com\example\studytracker\model\Priority.class
 com\example\studytracker\model\Subject.class
 com\example\studytracker\db\DatabaseManager.class

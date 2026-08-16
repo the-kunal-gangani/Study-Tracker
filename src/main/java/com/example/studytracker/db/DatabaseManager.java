@@ -14,6 +14,28 @@ public class DatabaseManager {
     }
 
     public void initializeTables() {
+
+        String createStudents = """
+                CREATE TABLE IF NOT EXISTS students (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name TEXT NOT NULL,
+                    class_name TEXT NOT NULL,
+                    division TEXT NOT NULL
+                )
+                """;
+
+        String createNotes = """
+                CREATE TABLE IF NOT EXISTS notes (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    title TEXT NOT NULL,
+                    content TEXT,
+                    class_name TEXT NOT NULL,
+                    division TEXT NOT NULL,
+                    subject_id INTEGER NOT NULL,
+                    FOREIGN KEY (subject_id) REFERENCES subjects(id)
+                )
+                """;
+
         String createSubjects = """
                 CREATE TABLE IF NOT EXISTS subjects (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -39,6 +61,8 @@ public class DatabaseManager {
 
             stmt.execute(createSubjects);
             stmt.execute(createAssignments);
+            stmt.execute(createNotes);
+            stmt.execute(createStudents);
 
         } catch (SQLException e) {
             throw new RuntimeException("Failed to initialize database tables", e);
