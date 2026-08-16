@@ -66,8 +66,16 @@ public class NoteDao {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     // read all six columns: id, title, content, class_name, division, subject_id
+                    int id = rs.getInt("id");
+                    String title = rs.getString("title");
+                    String content = rs.getString("content");
+                    String class_name = rs.getString("class_name");
+                    String dvsn = rs.getString("division");
+                    String subject_id = rs.getString("subject_id");
                     // build a Note with them (same constructor order as getAllNotes)
+                    Note note = new Note(id, title, content, className, division, subject_id);
                     // add it to `notes`
+                    notes.add(note);
                 }
             }
 
