@@ -127,29 +127,61 @@ public class MainApp extends Application {
         ComboBox<String> noteSubjectComboBox = new ComboBox<>();
         // populate this the same way you did subjectComboBox earlier —
         // loop through subjectDao.getAllSubjects(), add each .getName()
-        for (Note n : noteDao.getAllNotes()) {
-            noteSubjectComboBox.getItems().add(n.getTitle());
+        for (Subject s : subjectDao.getAllSubjects()) {
+            noteSubjectComboBox.getItems().add(s.getName());
         }
 
         Button addNoteButton = new Button("Add Note");
         addNoteButton.setOnAction(event -> {
-            // 1. read noteTitleField/noteContentField text, and the selected subject name
-            // 2. validate: title blank? subject not selected (null)? — content can stay
-            // optional
-            // 3. do the SAME subject-name-to-ID lookup loop you wrote for assignments
-            // (loop through subjectDao.getAllSubjects(), match .getName(), grab .getId())
-            // 4. build a new Note — but notice: className and division come from
-            // loggedInStudent, NOT from any text field:
-            // new Note(0, title, content, loggedInStudent.getClassName(),
-            // loggedInStudent.getDivision(), subjectId)
-            // 5. try/catch around noteDao.addNotes(note):
-            // - success: INFORMATION alert, clear+reload notesView using
-            // noteDao.getNotesForStudents(loggedInStudent.getClassName(),
-            // loggedInStudent.getDivision())
-            // (NOT getAllNotes — students should only ever see their own filtered view,
-            // even right after adding something)
-            // - failure: ERROR alert
+            String title = noteTitleField.getText();
+            String content = noteContentField.getText();
+            String selectedSubjectName = noteSubjectComboBox.getValue();
+
+            if (title.isBlank() || selectedSubjectName == null) {
+                new Alert(Alert.AlertType.WARNING, "Blank Values Found").showAndWait();
+                return;
+            }
+
+            int subjectId = -1;
+            for (Subject s : subjectDao.getAllSubjects()) {
+                if (s.getName().equals(selectedSubjectName)) {
+                    subjectId = s.getId();
+                }
+            }
+
+            Note note = new Note(0, title, content, loggedInStudent.getClassName(),
+                    loggedInStudent.getDivision(), subjectId);
+
+            try {
+                noteDao.addNotes(note);
+                new Alert(Alert.AlertType.INFORMATION, "Note Added Successfully").showAndWait();
+
+                notesView.getItems().clear();
+                for (Note n : noteDao.getNotesForStudents(loggedInStudent.getClassName(),
+                        loggedInStudent.getDivision())) {
+                    notesView.getItems().add(n.getTitle());
+                }
+                noteTitleField.clear();
+                noteContentField.clear();
+            } catch (RuntimeException e) {
+                new Alert(Alert.AlertType.ERROR, "Failed to Add Note: " + e.getMessage()).showAndWait();
+            }
         });
+        VBox noteFormBox = new VBox(6, noteTitleLabel, noteTitleField, noteContentLabel, noteContentField,
+                noteSubjectLabel, noteSubjectComboBox, addNoteButton);
+        noteFormBox.setPadding(new Insets(15));
+
+        Label notesListLabel = new Label("Your Notes");
+        notesListLabel.getStyleClass().add("section-heading");
+
+        VBox notesContent = new VBox(10, noteFormBox, notesListLabel, notesView);
+        notesContent.setPadding(new Insets(15));
+
+        ScrollPane notesScroll = new ScrollPane(notesContent);
+        notesScroll.setFitToWidth(true);
+
+        Tab notesTab = new Tab("Notes", notesScroll);
+        notesTab.setClosable(false);
         ListView<String> listView = new ListView<>();
         for (Subject s : subjectDao.getAllSubjects()) {
             listView.getItems().add(s.getName());
@@ -273,7 +305,7 @@ public class MainApp extends Application {
         Tab assignmentsTab = new Tab("Assignments", assignmentsPane);
         assignmentsTab.setClosable(false);
 
-        TabPane tabPane = new TabPane(subjectsTab, assignmentsTab);
+        TabPane tabPane = new TabPane(subjectsTab, assignmentsTab, notesTab);
 
         Scene scene = new Scene(tabPane, 600, 450);
         scene.getStylesheets().add(getClass().getResource("/styles.css").toExternalForm());
