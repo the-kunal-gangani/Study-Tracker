@@ -17,12 +17,13 @@ public class StudentDao {
     }
 
     public void addStudent(Student student) {
-        String sql = "INSERT into students (columns: name, class_name, division)";
+        String sql = "INSERT into students (name, class_name, division) VALUES (?,?,?)";
         try (Connection conn = dbManager.connect();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, student.getName());
             stmt.setString(2, student.getClassName());
             stmt.setString(3, student.getDivision());
+            stmt.execute();
         } catch (SQLException e) {
             throw new RuntimeException("....", e);
         }
@@ -41,7 +42,7 @@ public class StudentDao {
                 String class_name = rs.getString("class_name");
                 String division = rs.getString("division");
 
-                Student student = new Student(id, class_name, name, division);
+                Student student = new Student(id, name, class_name, division);
                 students.add(student);
             }
         } catch (SQLException e) {
@@ -50,5 +51,26 @@ public class StudentDao {
         return students;
     }
 
-    
+    public java.util.Optional<Student> findByNameClassDivision(String name, String className, String division) {
+        String sql = "SELECT * FROM students WHERE name = ? AND class_name = ? AND division = ?";
+
+        try (Connection conn = dbManager.connect();
+                PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, name);
+            stmt.setString(2, className);
+            stmt.setString(3, division);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    int id = rs.getInt("id");
+                    Student student = new Student(id, name, className, division);
+                    return java.util.Optional.of(student);
+                } else {
+                    return java.util.Optional.empty();
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to find student", e);
+        }
+    }
 }
