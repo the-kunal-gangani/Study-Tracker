@@ -34,6 +34,8 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        dbManager = new DatabaseManager();
+        dbManager.initializeTables();
         Label splashLabel = new Label("MCA Study Tracker");
         splashLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;");
 
